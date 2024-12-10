@@ -313,7 +313,6 @@ if(model_indicator == 1){
   
   return Rcpp::List::create(Rcpp::Named("theta_true") = theta_true,
                             Rcpp::Named("beta") = beta,
-                            Rcpp::Named("phi") = phi,
                             Rcpp::Named("tau2") = tau2,
                             Rcpp::Named("rho") = rho,
                             Rcpp::Named("acctot_rho_trans") = acctot_rho_trans);
