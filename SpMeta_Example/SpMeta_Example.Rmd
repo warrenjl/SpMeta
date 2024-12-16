@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## SpMeta_Example
 [1]  Load neighborhood adjacency list:
 ```{r}
-url_path<-"https://github.com/warrenjl/SpMeta/SpMeta_Example/neighbors.RData"
+url_path<-"https://raw.githubusercontent.com/warrenjl/SpMeta/main/SpMeta_Example/neighbors.RData"
 load(url(url_path))
 ```
 
@@ -20,7 +20,7 @@ load(url(url_path))
 
 * Setting the reproducibility seed and initializing packages for data simulation: 
 ```{r}
-set.seed(3365)
+set.seed(2165)
 
 library(SpMeta)  
 library(mnormt)  #Multivariate normal distribution
@@ -124,6 +124,8 @@ plot(colMeans(phi_samps[1001:11000,]),
      unlist(phi_true),
      ylab = "phi_true",
      xlab = "phi_est")
+abline(0,1,
+       col = "red")
 
 theta_true_samps<-matrix(NA,
                          nrow = 11000,
@@ -132,7 +134,9 @@ for(j in 1:11000){
    theta_true_samps[j,]<-unlist(results$theta_true[[j]])
    }
 plot(colMeans(theta_true_samps[1001:11000,]),
-     unlist(theta_true_true),
+     unlist(theta_true),
      ylab = "theta_true_true",
      xlab = "theta_true_est")
+abline(0,1,
+       col = "red")
 ```
