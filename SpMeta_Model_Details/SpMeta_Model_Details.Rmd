@@ -1,0 +1,74 @@
+---
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+# SpMeta: Spatial Meta Analysis/Regression Modeling
+
+## Statistical Model
+$$\hat{\theta}_{ij}|\theta_{ij} \stackrel{\text{ind}}{\sim} \text{N}\left(\theta_{ij}, \hat{\delta}_{ij}^2\right),\ i=1,...,n;\ j=1,...,m_i;$$
+
+* $n$:  Number of geographically separated spatial regions (e.g., states);
+
+* $m_i$:  Number of contiguous spatial units within spatial region $i$ (e.g., counties within a state);
+
+* $\hat{\theta}_{ij}$:  Point estimate from first stage modeling;
+
+* $\hat{\delta}_{ij}$:  Standard error of the point estimate.
+
+
+$$\theta_{ij} = \textbf{x}_{ij}^{\text{T}} \boldsymbol{\beta} + \phi_{ij} + \epsilon_{ij};$$
+
+$$\theta_{ij}|\boldsymbol{\theta}_{i,-j}, \rho_i, \tau_i^2 \stackrel{\text{ind}}{\sim}\text{N}\left(\frac{\rho_i \sum_{k=1}^{m_i} w^{(i)}_{jk}\theta_{ik}}{\rho_i \sum_{j=k}^{m_i} w^{(i)}_{jk} + 1-\rho}, \frac{\tau_i^2}{\rho_i \sum_{k=1}^{m_i} w^{(i)}_{jk} + 1 - \rho_i}\right),\ j=1,...,m_i;$$
+
+* Independence between parameters across the different geographically separated regions (i.e., $\boldsymbol{\theta}_1, ..., \boldsymbol{\theta}_n$);
+
+* $\boldsymbol{\theta}_{i,-j}^{\text{T}} = \left(\theta_{i1}, ..., \theta_{i,j-1}, \theta_{i,j+1}, ..., \theta_{i,m_i}\right)$;
+
+* $w^{(i)}_{jk}$:  Equal to one if areal units $j$ and $k$ are neighbors, zero otherwise.  $w^{(i)}_{jj} = 0$ by definition.
+
+$$\phi_{ij} | \sigma^2_i \stackrel{\text{ind}}{\sim} \text{N}\left(0, \sigma^2_i\right).$$
+
+## Prior Information
+$\beta_k \stackrel{\text{iid}}{\sim}\text{N}\left(0, \sigma^2_{\beta}\right),\ k=1,...,p;$
+
+* $p$: Length of $\textbf{x}_{ij}$ vector (same for all $i,j$);
+
+* Default setting: $\sigma^2_{\beta} = 10,000.$
+
+$\sigma^2_i \stackrel{\text{iid}}{\sim} \text{Inverse Gamma}\left(a_{\sigma^2}, b_{\sigma^2}\right);$
+
+* Default setting: $a_{\sigma^2} = 0.01$, $b_{\sigma^2} = 0.01.$
+
+$\tau^2_i \stackrel{\text{iid}}{\sim} \text{Inverse Gamma}\left(a_{\tau^2}, b_{\tau^2}\right);$
+
+* Default setting: $a_{\tau^2} = 0.01$, $b_{\tau^2} = 0.01.$
+
+$\rho_i \stackrel{\text{iid}}{\sim} \text{Uniform}\left(a_{\rho}, b_{\rho}\right);$
+
+* Default setting: $a_{\rho} = 0.00$, $b_{\rho} = 1.00.$
+
+## Default Initial Values
+* $\theta_{ij} = \hat{\theta}_{ij}$ for all $i,j$
+
+* $\beta_k = 0$ for all $k$;
+
+* $\phi_{ij} = 0$ for all $i,j$;
+
+* $\sigma^2_i = 1.00$ for all $i$;
+
+* $\tau^2_i = 1.00$ for all $i$;
+
+* $\rho_i = 0.50$ for all $i$.
+
+## Model Indicator
+* model_indicator $= 0$: Non-spatial:  
+  +  $\phi_{ij} \equiv 0 \text{ for all } i,j;$
+
+* model_indicator $= 1$: Spatial Option 1:  
+  +  $\epsilon_{ij} \equiv 0 \text{ for all } i,j;$
+
+* model_indicator $= 2$: Spatial Option 2:  
+  +  Both $\phi_{ij}$ and $\epsilon_{ij}$ included in the model.
+

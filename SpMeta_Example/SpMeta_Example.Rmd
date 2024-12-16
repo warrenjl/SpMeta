@@ -1,0 +1,138 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# SpMeta: Spatial Meta Analysis/Regression Modeling
+
+## SpMeta_Example
+[1]  Load neighborhood adjacency list:
+```{r}
+url_path<-"https://github.com/warrenjl/SpMeta/SpMeta_Example/neighbors.RData"
+load(url(url_path))
+```
+
+[2] Simulate data from the proposed model:
+
+* Setting the reproducibility seed and initializing packages for data simulation: 
+```{r}
+set.seed(3365)
+
+library(SpMeta)  
+library(mnormt)  #Multivariate normal distribution
+```
+
+* Setting the global data values:
+```{r}
+n<-length(W)  #Number of separated spatial regions
+m<-rep(NA,  #Number of continguous spatial units in each region
+       times = n)
+for(i in 1:n){
+   m[i]<-nrow(W[[i]]) 
+   }
+```
+
+* Setting the values for the statistical model parameters and simulating data:
+```{r}
+sigma2_true<-rgamma(n = n,
+                    shape = 10.00,
+                    rate = 100.00)
+beta_true<-c(1.00,
+             -2.00)
+tau2_true<-rgamma(n = n,
+                  shape = 10.00,
+                  rate = 10.00)
+rho_true<-runif(n = n)
+
+phi_true<-list(0)
+theta_true<-list(0)
+theta_hat<-list(0)
+X<-list(0)
+Q<-list(0)
+SE<-list(0)
+for(i in 1:n){
+
+   X[[i]]<-matrix(1,
+                  nrow = m[i],
+                  ncol = 2)
+   X[[i]][,2]<-rnorm(n = m[i])
+
+   Q[[i]]<-rho_true[i]*(diag(rowSums(W[[i]])) - W[[i]]) +
+           (1.00 - rho_true[i])*diag(m[i])
+
+   phi_true[[i]]<-rmnorm(n = 1,
+                         mean = 0.00,
+                         varcov = (tau2_true[i]*chol2inv(chol(Q[[i]]))))
+   phi_true[[i]]<-phi_true[[i]] - 
+                  mean(phi_true[[i]])
+  
+   theta_true[[i]]<-rmnorm(n = 1,
+                           mean = (X[[i]]%*%beta_true + phi_true[[i]]),
+                           varcov = (sigma2_true[i]*diag(m[i])))
+   SE[[i]]<-rgamma(n = m[i],
+                   shape = 1.00,
+                   rate = 10.00)
+   theta_hat[[i]]<-rnorm(n = m[i],
+                         mean = theta_true[[i]],
+                         sd = SE[[i]])
+
+   }
+```
+
+[2] Fit SpMeta:
+
+```{r echo=TRUE}
+results<-SpMeta(mcmc_samples = 11000, 
+                theta_hat = theta_hat,
+                se = SE,
+                x = X,
+                model_indicator = 2,
+                neighbors = W,
+                metrop_var_rho_trans = rep(3.00, time = n))
+```
+
+[3]  Analyzing Output:
+
+```{r}
+par(mfrow=c(2,2))
+plot(results$beta[1, 1001:11000], 
+     type="l",
+     ylab="beta",
+     xlab="Sample")
+abline(h=beta_true[1],
+       col="red",
+       lwd=2)  #True value
+plot(results$beta[2, 1001:11000], 
+     type="l",
+     ylab="beta",
+     xlab="Sample")
+abline(h=beta_true[2],
+       col="red",
+       lwd=2)  #True value
+
+phi_samps<-matrix(NA,
+                  nrow = 11000,
+                  ncol = sum(m))
+for(j in 1:11000){
+   phi_samps[j,]<-unlist(results$phi[[j]])
+   }
+plot(colMeans(phi_samps[1001:11000,]),
+     unlist(phi_true),
+     ylab = "phi_true",
+     xlab = "phi_est")
+
+theta_true_samps<-matrix(NA,
+                         nrow = 11000,
+                         ncol = sum(m))
+for(j in 1:11000){
+   theta_true_samps[j,]<-unlist(results$theta_true[[j]])
+   }
+plot(colMeans(theta_true_samps[1001:11000,]),
+     unlist(theta_true_true),
+     ylab = "theta_true_true",
+     xlab = "theta_true_est")
+```
