@@ -7,7 +7,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-# SpMeta: Spatial Meta Analysis/Regression Modeling
+# SpMeta: Spatial-Meta Analysis/Regression Modeling
 
 ## SpMeta_Example
 [1]  Load neighborhood adjacency list:

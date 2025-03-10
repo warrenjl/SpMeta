@@ -4,7 +4,7 @@ output:
   word_document: default
   html_document: default
 ---
-# SpMeta: Spatial Meta Analysis/Regression Modeling
+# SpMeta: Spatial Meta-Analysis/Regression Modeling
 
 ## Statistical Model
 $$\hat{\theta}_{ij}|\theta_{ij} \stackrel{\text{ind}}{\sim} \text{N}\left(\theta_{ij}, \hat{\delta}_{ij}^2\right),\ i=1,...,n;\ j=1,...,m_i;$$

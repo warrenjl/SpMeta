@@ -1,3 +1,5 @@
 data:  Final cleaned dataset used in the manuscript.  
 
-W:  A list containing the binary county "neighborhood" information for each of the eight states in the analysis (i.e., which counties share a border with each other).  The ordering of the states and counties (within a state) follow the ordering in the provided data.csv file. 
+W:  A list containing the binary county "neighborhood" information for each of the eight states in the analysis (i.e., which counties share a border with each other).  The ordering of the states and counties (within a state) follow the ordering in the provided data.csv file.
+
+Note:  The "bric" scores were negated (i.e., multiplied by -1) prior to analysis so that increasing values meant worsening conditions to be in agreement with the other variables. 
